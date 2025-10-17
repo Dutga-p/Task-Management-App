@@ -26,7 +26,7 @@ interface TaskStore {
   deleteTask: (id: string) => Promise<void>;
 }
 
-export const useTaskStore = create<TaskStore>((set, get) => ({
+export const useTaskStore = create<TaskStore>((set) => ({
   tasks: [],
   darkMode: false,
   searchQuery: '',

@@ -6,6 +6,7 @@ import { EmptyState } from './components/tasks/EmptyState';
 import { TaskModal } from './components/tasks/TaskModal';
 import { useTaskStore } from './lib/store';
 import { useTaskStats } from './hooks/useTaskStats';
+import { useTasks } from './hooks/useTasks';
 import type { Task } from './types/task';
 
 export default function App() {
@@ -14,14 +15,19 @@ export default function App() {
     darkMode, 
     searchQuery,
     isTaskModalOpen,
+    loading,
+    error,
     toggleDarkMode, 
     setSearchQuery,
     moveTask,
     openTaskModal,
     closeTaskModal,
     addTask,
-    deleteTask, 
+    deleteTask,
   } = useTaskStore();
+  
+  // Conectar a Firebase y escuchar cambios en tiempo real
+  useTasks(); // Puedes pasar userId aquí si tienes autenticación
   
   const stats = useTaskStats(tasks);
 
@@ -29,24 +35,36 @@ export default function App() {
     openTaskModal();
   };
 
-  const handleSubmitTask = (taskData: Omit<Task, 'id'>) => {
-    const newTask: Task = {
-      ...taskData,
-      id: Date.now().toString(),
-    };
-    addTask(newTask);
+  const handleSubmitTask = async (taskData: Omit<Task, 'id'>) => {
+    try {
+      await addTask(taskData);
+      closeTaskModal();
+    } catch (error) {
+      console.error('Error al crear tarea:', error);
+      alert('Error al crear la tarea. Por favor intenta de nuevo.');
+    }
   };
 
   const handleTaskClick = (task: Task) => {
     console.log('Task clicked:', task);
   };
 
-  const handleTaskMove = (taskId: string, newStatus: 'todo' | 'in-progress' | 'done') => {
-    moveTask(taskId, newStatus);
+  const handleTaskMove = async (taskId: string, newStatus: 'todo' | 'in-progress' | 'done') => {
+    try {
+      await moveTask(taskId, newStatus);
+    } catch (error) {
+      console.error('Error al mover tarea:', error);
+      alert('Error al mover la tarea. Por favor intenta de nuevo.');
+    }
   };
 
-  const handleDeleteTask = (taskId: string) => {
-    deleteTask(taskId);
+  const handleDeleteTask = async (taskId: string) => {
+    try {
+      await deleteTask(taskId);
+    } catch (error) {
+      console.error('Error al eliminar tarea:', error);
+      alert('Error al eliminar la tarea. Por favor intenta de nuevo.');
+    }
   };
 
   const filteredTasks = tasks.filter((task) =>
@@ -64,6 +82,13 @@ export default function App() {
         />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Mostrar error si existe */}
+          {error && (
+            <div className="mb-4 p-4 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg">
+              {error}
+            </div>
+          )}
+
           <StatsSection stats={stats} />
 
           <div className="mb-6">
@@ -80,12 +105,17 @@ export default function App() {
             </h2>
           </div>
 
-          {filteredTasks.length > 0 ? (
+          {/* Mostrar loading */}
+          {loading && tasks.length === 0 ? (
+            <div className="flex items-center justify-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
+          ) : filteredTasks.length > 0 ? (
             <KanbanBoard 
               tasks={filteredTasks} 
               onTaskMove={handleTaskMove}
               onTaskClick={handleTaskClick}
-              onDelete={handleDeleteTask} 
+              onDelete={handleDeleteTask}
             />
           ) : (
             <EmptyState onCreateTask={handleNewTask} />

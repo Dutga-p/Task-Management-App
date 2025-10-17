@@ -26,13 +26,13 @@ export const TaskModal = ({ isOpen, onClose, onSubmit, task }: TaskModalProps) =
   });
 
   const categories = [
-    'Development',
-    'Design',
+    'Desarrollo',
+    'Diseño',
     'Marketing',
-    'Documentation',
-    'Meetings',
+    'Documentación',
+    'Reuniones',
     'Testing',
-    'Research',
+    'Investigación',
     'QA',
     'Other',
   ];

@@ -3,6 +3,7 @@ import { SearchBar } from './components/ui/SearchBar';
 import { StatsSection } from './components/tasks/StatsSection';
 import { KanbanBoard } from './components/tasks/KanbanBoard';
 import { EmptyState } from './components/tasks/EmptyState';
+import { TaskModal } from './components/tasks/TaskModal';
 import { useTaskStore } from './lib/store';
 import { useTaskStats } from './hooks/useTaskStats';
 import type { Task } from './types/task';
@@ -11,29 +12,43 @@ export default function App() {
   const { 
     tasks, 
     darkMode, 
-    searchQuery, 
+    searchQuery,
+    isTaskModalOpen,
     toggleDarkMode, 
     setSearchQuery,
-    moveTask 
+    moveTask,
+    openTaskModal,
+    closeTaskModal,
+    addTask,
+    deleteTask, 
   } = useTaskStore();
   
   const stats = useTaskStats(tasks);
 
   const handleNewTask = () => {
-    console.log('Crear nueva tarea');
-    // Aquí implementarás la lógica para abrir el modal de nueva tarea
+    openTaskModal();
+  };
+
+  const handleSubmitTask = (taskData: Omit<Task, 'id'>) => {
+    const newTask: Task = {
+      ...taskData,
+      id: Date.now().toString(),
+    };
+    addTask(newTask);
   };
 
   const handleTaskClick = (task: Task) => {
     console.log('Task clicked:', task);
-    // Aquí implementarás la lógica para abrir el modal de edición
   };
 
   const handleTaskMove = (taskId: string, newStatus: 'todo' | 'in-progress' | 'done') => {
     moveTask(taskId, newStatus);
   };
 
-  // Filtrar tareas según la búsqueda
+  const handleDeleteTask = (taskId: string) => {
+    deleteTask(taskId);
+  };
+
   const filteredTasks = tasks.filter((task) =>
     task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     task.category.toLowerCase().includes(searchQuery.toLowerCase())
@@ -70,11 +85,18 @@ export default function App() {
               tasks={filteredTasks} 
               onTaskMove={handleTaskMove}
               onTaskClick={handleTaskClick}
+              onDelete={handleDeleteTask} 
             />
           ) : (
             <EmptyState onCreateTask={handleNewTask} />
           )}
         </main>
+
+        <TaskModal
+          isOpen={isTaskModalOpen}
+          onClose={closeTaskModal}
+          onSubmit={handleSubmitTask}
+        />
       </div>
     </div>
   );

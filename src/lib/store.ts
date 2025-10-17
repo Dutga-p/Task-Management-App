@@ -5,6 +5,7 @@ interface TaskStore {
   tasks: Task[];
   darkMode: boolean;
   searchQuery: string;
+  isTaskModalOpen: boolean; // NUEVO
   setTasks: (tasks: Task[]) => void;
   addTask: (task: Task) => void;
   updateTask: (id: string, task: Partial<Task>) => void;
@@ -12,6 +13,8 @@ interface TaskStore {
   deleteTask: (id: string) => void;
   toggleDarkMode: () => void;
   setSearchQuery: (query: string) => void;
+  openTaskModal: () => void; // NUEVO
+  closeTaskModal: () => void; // NUEVO
 }
 
 export const useTaskStore = create<TaskStore>((set) => ({
@@ -67,6 +70,7 @@ export const useTaskStore = create<TaskStore>((set) => ({
   ],
   darkMode: false,
   searchQuery: '',
+  isTaskModalOpen: false, // NUEVO
   setTasks: (tasks) => set({ tasks }),
   addTask: (task) => set((state) => ({ tasks: [...state.tasks, task] })),
   updateTask: (id, updatedTask) =>
@@ -87,4 +91,6 @@ export const useTaskStore = create<TaskStore>((set) => ({
     })),
   toggleDarkMode: () => set((state) => ({ darkMode: !state.darkMode })),
   setSearchQuery: (query) => set({ searchQuery: query }),
+  openTaskModal: () => set({ isTaskModalOpen: true }), // NUEVO
+  closeTaskModal: () => set({ isTaskModalOpen: false }), // NUEVO
 }));

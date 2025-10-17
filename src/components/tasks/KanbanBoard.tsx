@@ -7,9 +7,15 @@ interface KanbanBoardProps {
   tasks: Task[];
   onTaskMove: (taskId: string, newStatus: 'todo' | 'in-progress' | 'done') => void;
   onTaskClick?: (task: Task) => void;
+  onDelete?: (taskId: string) => void; // NUEVO
 }
 
-export const KanbanBoard = ({ tasks, onTaskMove, onTaskClick }: KanbanBoardProps) => {
+export const KanbanBoard = ({ 
+  tasks, 
+  onTaskMove, 
+  onTaskClick,
+  onDelete 
+}: KanbanBoardProps) => {
   const todoTasks = tasks.filter((task) => task.status === 'todo');
   const inProgressTasks = tasks.filter((task) => task.status === 'in-progress');
   const doneTasks = tasks.filter((task) => task.status === 'done');
@@ -34,18 +40,21 @@ export const KanbanBoard = ({ tasks, onTaskMove, onTaskClick }: KanbanBoardProps
           status="todo"
           tasks={todoTasks}
           onTaskClick={onTaskClick}
+          onDelete={onDelete} 
         />
         <KanbanColumn
           title="En Proceso"
           status="in-progress"
           tasks={inProgressTasks}
           onTaskClick={onTaskClick}
+          onDelete={onDelete} 
         />
         <KanbanColumn
           title="Completado"
           status="done"
           tasks={doneTasks}
           onTaskClick={onTaskClick}
+          onDelete={onDelete} 
         />
       </div>
     </DragDropContext>

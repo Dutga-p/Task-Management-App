@@ -7,9 +7,16 @@ interface KanbanColumnProps {
   status: 'todo' | 'in-progress' | 'done';
   tasks: Task[];
   onTaskClick?: (task: Task) => void;
+  onDelete?: (taskId: string) => void;
 }
 
-export const KanbanColumn = ({ title, status, tasks, onTaskClick }: KanbanColumnProps) => {
+export const KanbanColumn = ({ 
+  title, 
+  status, 
+  tasks, 
+  onTaskClick,
+  onDelete 
+}: KanbanColumnProps) => {
   const getColumnColor = () => {
     switch (status) {
       case 'todo':
@@ -69,6 +76,7 @@ export const KanbanColumn = ({ title, status, tasks, onTaskClick }: KanbanColumn
                   task={task}
                   index={index}
                   onTaskClick={onTaskClick}
+                  onDelete={onDelete} // NUEVO
                 />
               ))
             )}
